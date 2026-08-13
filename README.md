@@ -19,10 +19,9 @@ An OLAP real-time streaming and telemetry analytics platform built using **Click
 
    ```bash
    docker exec -it local-clickhouse clickhouse-client --password password
-
-      ```sql
+   ``` 
+## SQL Test
+   ```sql
    SELECT region_id, avg(avg_mw) AS overall_avg_mw
     FROM alberta_energy.hourly_regional_summary
     GROUP BY region_id;
-
-
