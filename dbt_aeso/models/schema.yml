@@ -1,0 +1,23 @@
+version: 2
+
+sources:
+  - name: alberta_energy
+    tables:
+      - name: raw_kafka_telemetry
+        description: "Raw streaming telemetry ingested via Redpanda/Kafka."
+
+models:
+  - name: fct_regional_power_minutely
+    description: "Minute-level aggregated power telemetry for Alberta grid regions."
+    columns:
+      - name: window_start
+        description: "Start timestamp of the 1-minute aggregation bucket."
+        tests:
+          - not_null
+      - name: region_id
+        description: "Identifier for the grid region."
+        tests:
+          - not_null
+      - name: avg_megawatts
+        tests:
+          - not_null

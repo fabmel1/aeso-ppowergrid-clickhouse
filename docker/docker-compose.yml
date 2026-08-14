@@ -3,8 +3,8 @@ services:
     image: clickhouse/clickhouse-server:latest
     container_name: local-clickhouse
     ports:
-      - "8123:8123" # HTTP Port
-      - "9000:9000" # Native Client Port
+      - "8123:8123"
+      - "9000:9000"
     environment:
       - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
       - CLICKHOUSE_PASSWORD=password
@@ -14,11 +14,33 @@ services:
         hard: 262144
     volumes:
       - ch_data:/var/lib/clickhouse
-    healthcheck:
-      test: ["CMD", "clickhouse-client", "--password", "password", "--query", "SELECT 1"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+
+  # Lightweight Kafka-compatible broker
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:latest
+    container_name: local-kafka
+    command:
+      - redpanda start
+      - --smp 1
+      - --memory 1G
+      - --reserve-memory 0M
+      - --overprovisioned
+      - --kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+      - --advertise-kafka-addr PLAINTEXT://redpanda:29092,OUTSIDE://localhost:9092
+    ports:
+      - "9092:9092"
+
+  # Real-Time Monitoring Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: local-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-clickhouse-datasource
+    depends_on:
+      - clickhouse
 
 volumes:
   ch_data:

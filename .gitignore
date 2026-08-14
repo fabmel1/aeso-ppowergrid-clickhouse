@@ -1,0 +1,22 @@
+# Python virtual environment
+venv/
+.venv/
+env/
+
+# dbt artifacts and dependencies
+target/
+dbt_packages/
+logs/
+.dbt/
+dbt_aeso/profiles.yml
+
+# Logs & temp files
+*.log
+*.tmp
+.DS_Store
+.vscode/
+.idea/
+
+# ClickHouse/Redpanda local data mounts (if you mounted them locally instead of named volumes)
+data/
+*.db

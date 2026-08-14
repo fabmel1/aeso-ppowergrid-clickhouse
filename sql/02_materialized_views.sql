@@ -23,3 +23,16 @@ SELECT
     count() AS total_records
 FROM grid_telemetry
 GROUP BY window_start, region_id;
+
+-- 3. Materialized View for Minutely Regional Power Statistics
+CREATE MATERIALIZED VIEW alberta_energy.mv_regional_power_minutely
+ENGINE = SummingMergeTree()
+PRIMARY KEY (window_start, region_id)
+ORDER BY (window_start, region_id)
+AS SELECT
+    toStartOfMinute(recorded_at) AS window_start,
+    region_id,
+    avg(megawatts) AS avg_megawatts,
+    count() AS total_samples
+FROM alberta_energy.raw_kafka_telemetry
+GROUP BY window_start, region_id;
